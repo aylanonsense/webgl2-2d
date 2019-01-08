@@ -1,0 +1,8 @@
+{
+  "name": "webgl2-2d",
+  "description": "Fooling around with WebGL2 again!",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
