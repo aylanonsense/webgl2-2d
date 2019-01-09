@@ -1,39 +1,39 @@
-import { vertexShaderSource, fragmentShaderSource } from './shader/simple'
-import { createVertexShader, createFragmentShader, createProgram } from './util/shader'
+import * as shader from './shader/simple-red'
+import Buffer from './gl/Buffer'
+import Program from './gl/Program'
+import Renderer from './gl/Renderer'
+import VertexArrayObject from './gl/VertexArrayObject'
 
 export default () => {
+  // Find the canvas
   const canvas = document.getElementById('canvas')
   const gl = canvas.getContext('webgl2')
-  const program = createProgram(gl, createVertexShader(gl, vertexShaderSource), createFragmentShader(gl, fragmentShaderSource))
+  const renderer = new Renderer(gl)
 
-  const positionAttributeLocation = gl.getAttribLocation(program, 'a_position')
-  const positionBuffer = gl.createBuffer()
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-  const positions = [
-    0, 0,
-    0, 0.5,
-    0.7, 0,
-  ]
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW)
-  const vao = gl.createVertexArray()
-  gl.bindVertexArray(vao)
-  gl.enableVertexAttribArray(positionAttributeLocation)
+  // Create program
+  const program = new Program(gl, shader, [ 'a_position' ], {
+    u_resolution: { type: '2f' }
+  })
+  program.uniforms.u_resolution.set(gl.canvas.width, gl.canvas.height)
 
-  const size = 2
-  const type = gl.FLOAT
-  const normalize = false
-  const stride = 0
-  const offset = 0
-  gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset)
+  // Create geometry
+  const positionBuffer = new Buffer(gl)
+  positionBuffer.insert([
+    30, 60,
+    240, 60,
+    30, 90,
+    30, 90,
+    240, 60,
+    240, 90
+  ], true)
 
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-  gl.clearColor(0, 0, 0, 0)
-  gl.clear(gl.COLOR_BUFFER_BIT)
-  gl.useProgram(program)
-  gl.bindVertexArray(vao)
+  // Bind it all together
+  const vao = new VertexArrayObject(gl, positionBuffer, program.attributes.a_position, 2, gl.FLOAT)
 
-  const primitiveType = gl.TRIANGLES
-  const offset2 = 0
-  const count = 3
-  gl.drawArrays(primitiveType, offset2, count)
+  // Render the scene
+  renderer.resizeViewport()
+  renderer.clear()
+  program.use()
+  vao.bind()
+  renderer.drawTriangles(6)
 }
