@@ -4,6 +4,7 @@
   "main": "server.js",
   "dependencies": {
     "express": "^4.16.4",
+    "pixi.js": "^4.8.5",
     "webpack": "^4.28.1"
   }
 }

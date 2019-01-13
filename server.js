@@ -12,14 +12,15 @@ webpack({
   mode: 'none',
   target: 'web',
   devtool: 'inline-source-map',
-  entry: path.resolve(__dirname, 'src', 'index.js'),
+  entry: path.resolve(__dirname, 'src/index.js'),
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'index.js'
   },
   resolve: {
     modules: [
-      path.resolve(__dirname, 'src')
+      path.resolve(__dirname, 'src'),
+      path.resolve(__dirname, 'node_modules')
     ]
   }
 }, (err, stats) => {
@@ -29,8 +30,14 @@ webpack({
 
 // Set up routes
 app.get('/index.js', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'build', 'index.js'))
+  res.sendFile(path.resolve(__dirname, 'build/index.js'))
 })
+// app.get('/pixi.js', (req, res) => {
+//   res.sendFile(path.resolve(__dirname, 'node_modules/pixi.js/dist/pixi.min.js'))
+// })
+// app.get('/pixi.js.map', (req, res) => {
+//   res.sendFile(path.resolve(__dirname, 'node_modules/pixi.js/dist/pixi.min.js.map'))
+// })
 app.use(express.static('public'))
 
 // Start the server
